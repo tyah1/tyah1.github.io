@@ -4,14 +4,38 @@
 	<meta charset="utf-8">
 	<title>channels by stc</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<style>
+	img {
+	width:50%; 
+	height:auto;
+	}
+	
+	img {
+    display: inline-block;
+    width: 25%; // Show 4 images in a row normally
+    height: auto;
+	border: 5px solid #555
+}
+
+@media (max-width: 600px) {
+  img {
+    width: 100%; // Override width to show only one image in a row on smaller screens
+  }
+}
+	</style>
 </head>
 <body>
+
+<a href= "channels-fb1.jpg">
 <img 
-	Style=”float: left; margin-right: 5%; margin-bottom: 1em;” 
-	srcset="channels-fb1.jpg, 480w, channels-fb1.jpg, 700w"
-	 sizes="(max-width: 600px) 480px, 700px"
-	src="channels-fb1.jpg" alt=" delivery feedback"
+	 src="channels-fb1.jpg" alt=" delivery feedback"
+	 />
+</a>
+
+<a href= "channels-fb2.jpg">
+	<img 
+	src="channels-fb2.jpg" alt=" delivery feedback"
 	/>
-<img src="channels-fb2.jpg" alt=" delivery feedback" />
+</a>
 </body>
 </html>
