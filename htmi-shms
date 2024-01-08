@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>mt-Certifications</title>
+	<title>HTMI and SHMS Certifications</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<style>
 	img {
@@ -20,31 +20,20 @@
 </head>
 
 <body>
-
-<p> Certificates </p>
-
+<a href= "blank">
+<img src="" alt="Hotel and Operations"/>
+</a>
+		
 <a href= "">
-<img 
-	 src="" alt="Finance"
-	 />
+<img src="blank" alt="Finance"/>
 </a>
 
-<a href= "">
-	<img 
-	src="" alt="Cost Management and Profit Analysis"
-	/>
+<a href= "blank">
+<img src="" alt="Sales and Marketing" />
 </a>
-<a href= "">
-
-<img 
-	 src="" alt="Sales and Marketing"
-	 />
-</a>
-
-<a href= "">
-	<img 
-	src="" alt="Hotels Supplies"
-	/>
+		
+<a href= "blank">
+<img src="" alt="Cost Management and Profit Analysis"/>
 </a>
 
 </body>
