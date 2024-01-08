@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>channels by stc</title>
+	<title>mt-Certifications</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<style>
 	img {
@@ -16,25 +16,35 @@
     height: 90%;
 	border: 5px solid #555
 }
-
-
 	</style>
 </head>
+
 <body>
 
-<a href= "channels-fb1.jpg">
+<a href= "">
 <img 
-	 src="channels-fb1.jpg" alt=" delivery time and service feedback"
+	 src="" alt="Finance"
 	 />
-	<p>source: direct email</p>
 </a>
 
-<a href= "channels-fb2.jpg">
+<a href= "">
 	<img 
-	src="channels-fb2.jpg" alt=" delivery time and service feedback"
+	src="" alt="Cost Management and Profit Analysis"
 	/>
-	<p>source: direct email</p>
 </a>
+<a href= "">
+<img 
+	 src="" alt="Sales and Marketing"
+	 />
+</a>
+
+<a href= "">
+	<img 
+	src="" alt="Hotels Supplies"
+	/>
+</a>
+
+
 
 
 </body>
