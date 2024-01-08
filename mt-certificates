@@ -15,7 +15,7 @@
     width: 45%; // Show 4 images in a row normally
     height: 90%;
 	border: 5px solid #555
-}
+	}
 	</style>
 </head>
 
@@ -33,6 +33,7 @@
 	/>
 </a>
 <a href= "">
+
 <img 
 	 src="" alt="Sales and Marketing"
 	 />
@@ -43,9 +44,6 @@
 	src="" alt="Hotels Supplies"
 	/>
 </a>
-
-
-
 
 </body>
 </html>
