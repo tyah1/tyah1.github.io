@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Hofstee Method for Cut-Off Score Determination</title>
+<style>
+  body {font-family: Arial; padding: 10px;}
+  canvas {border: 1px solid #000; margin-top: 10px; max-width: 100%;}
+  label {margin-right: 20px;}
+  #cutoff, #stats {margin-top: 10px; font-size: 0.9em;}
+</style>
+
+</head>
+<body>
+<h2>Hofstee Method for Cut-Off Score Determination</h2>
+<div>
+  <label>Min Cut-off (c_min): 
+    <input type="number" id="c_min" value="30" min="0" max="100" step="1" inputmode="numeric" pattern="[0-9]*" />
+  </label>
+  <label>Max Cut-off (c_max): 
+    <input type="number" id="c_max" value="70" min="0" max="100" step="1" inputmode="numeric" pattern="[0-9]*" />
+  </label>
+  <label>Min Fail Rate (f_min %): 
+    <input type="number" id="f_min" value="25" min="0" max="100" step="1" inputmode="numeric" pattern="[0-9]*" />
+  </label>
+  <label>Max Fail Rate (f_max %): 
+    <input type="number" id="f_max" value="35" min="0" max="100" step="1" inputmode="numeric" pattern="[0-9]*" />
+  </label>
+</div>
+<div style="margin-top:10px;">
+  <label>Upload scores (TXT, CSV, XLSX, XLS): <input type="file" id="fileInput" accept=".txt,.csv,.xlsx,.xls"/></label>
+</div>
+<canvas id="canvas" width="700" height="400"></canvas>
+<div id="cutoff">Cut-off Score: - | Failure Rate (%): -</div>
+<div id="stats">Mean: - | Median: - | Data Points: 0</div>
+
+<!--<script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>-->
+
+<script src="xlsx.full.min.js"></script>
+
+<script>
+const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d');
+const cMin = document.getElementById('c_min'), cMax = document.getElementById('c_max');
+const fMin = document.getElementById('f_min'), fMax = document.getElementById('f_max');
+const fileInput = document.getElementById('fileInput');
+const cutoffDiv = document.getElementById('cutoff');
+const statsDiv = document.getElementById('stats');
+let scores = [], cumulativeFail = [];
+
+function mean(arr) {return arr.reduce((a,b)=>a+b,0)/arr.length;}
+function median(arr) {
+  const s = [...arr].sort((a,b)=>a-b);
+  const mid = Math.floor(s.length/2);
+  return s.length % 2 ? s[mid] : (s[mid-1]+s[mid])/2;
+}
+
+function generateDefaultData() {
+  scores = Array.from({length:101}, (_,i)=>i);
+  cumulativeFail = scores.map(x => 100/(1+Math.exp(-(x-50)/7)));
+  updateStats();
+  draw();
+}
+
+function computeCumulative(arr) {
+  arr = arr.filter(n => n>=0 && n<=100).sort((a,b)=>a-b);
+  scores = arr;
+  const n = arr.length;
+  cumulativeFail = arr.map((_,i)=>((i+1)/n)*100);
+  updateStats();
+}
+
+function updateStats() {
+  if(scores.length){
+    statsDiv.textContent = `Mean: ${mean(scores).toFixed(2)} | Median: ${median(scores).toFixed(2)} | Data Points: ${scores.length}`;
+  } else {
+    statsDiv.textContent = "Mean: - | Median: - | Data Points: 0";
+  }
+}
+
+function draw() {
+  const margin={left:80,right:200,top:40,bottom:50}; 
+  const width=canvas.width-margin.left-margin.right;
+  const height=canvas.height-margin.top-margin.bottom;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  
+  // Axes
+  ctx.beginPath();
+  ctx.moveTo(margin.left,margin.top);
+  ctx.lineTo(margin.left,margin.top+height);
+  ctx.lineTo(margin.left+width,margin.top+height);
+  ctx.strokeStyle='black';
+  ctx.lineWidth=2;
+  ctx.stroke();
+  
+  ctx.font='14px Arial';
+  ctx.fillText('Cumulative % students FAILING',margin.left-60,margin.top-5);
+  ctx.fillText('Percentage Correct',margin.left+width+10,margin.top+height+15);
+  
+  // Y-axis grid and labels
+  ctx.strokeStyle='#aaa'; ctx.lineWidth=1; ctx.font='12px Arial'; ctx.fillStyle='black';
+  for(let i=0;i<=10;i++){
+    let y=margin.top+height-i*height/10;
+    ctx.beginPath();
+    ctx.moveTo(margin.left-5,y);
+    ctx.lineTo(margin.left,y);
+    ctx.stroke();
+    ctx.fillText(i*10+'%',margin.left-50,y+5);
+    ctx.beginPath();
+    ctx.moveTo(margin.left,y);
+    ctx.lineTo(margin.left+width,y);
+    ctx.strokeStyle='#eee';
+    ctx.stroke();
+    ctx.strokeStyle='#aaa';
+  }
+  
+  // X-axis grid and labels
+  for(let i=0;i<=10;i++){
+    let x=margin.left+i*width/10;
+    ctx.beginPath();
+    ctx.moveTo(x,margin.top+height);
+    ctx.lineTo(x,margin.top+height+5);
+    ctx.stroke();
+    ctx.fillText(i*10,x-5,margin.top+height+25);
+  }
+  
+  // Failure curve (blue)
+  ctx.beginPath();
+  ctx.strokeStyle='blue';
+  ctx.lineWidth=2;
+  scores.forEach((score,i)=>{
+    const x=margin.left+(score/100)*width;
+    const y=margin.top+height-(cumulativeFail[i]/100)*height;
+    if(i==0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+  
+  // Hofstee line (red)
+  const cMinVal = parseFloat(cMin.value);
+  const cMaxVal = parseFloat(cMax.value);
+  const fMinVal = parseFloat(fMin.value);
+  const fMaxVal = parseFloat(fMax.value);
+
+  const x1= margin.left + ((isNaN(cMaxVal) ? 0 : cMaxVal)/100) * width;
+  const y1= margin.top + height - ((isNaN(fMinVal) ? 0 : fMinVal)/100) * height;
+  const x2= margin.left + ((isNaN(cMinVal) ? 0 : cMinVal)/100) * width;
+  const y2= margin.top + height - ((isNaN(fMaxVal) ? 0 : fMaxVal)/100) * height;
+  
+  ctx.beginPath();
+  ctx.strokeStyle='red';
+  ctx.lineWidth=2;
+  
+  // Handle line as point if all four values are equal
+  if (cMinVal === cMaxVal && fMinVal === fMaxVal) {
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x1, y1);
+  } else {
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+  }
+  ctx.stroke();
+  
+  let intersectX = null, intersectY = null;
+
+  // Intersection detection: if collapsed to point check near failure curve points
+  if (cMinVal === cMaxVal && fMinVal === fMaxVal) {
+    for(let i=0; i<scores.length; i++){
+      const px = margin.left + (scores[i]/100)*width;
+      const py = margin.top + height - (cumulativeFail[i]/100)*height;
+      if (Math.abs(px - x1) < 1 && Math.abs(py - y1) < 1) {
+        intersectX = px;
+        intersectY = py;
+        break;
+      }
+    }
+  } else {
+    // General line intersection
+    for(let i=0; i<scores.length-1; i++) {
+      const xA1= margin.left + (scores[i]/100)*width;
+      const yA1= margin.top + height - (cumulativeFail[i]/100)*height;
+      const xA2= margin.left + (scores[i+1]/100)*width;
+      const yA2= margin.top + height - (cumulativeFail[i+1]/100)*height;
+      const denom = (x2-x1)*(yA2-yA1) - (y2-y1)*(xA2-xA1);
+      if (denom === 0) continue;
+      const ua = ((xA2-xA1)*(y1-yA1) - (yA2-yA1)*(x1-xA1))/denom;
+      const ub = ((x2-x1)*(y1-yA1) - (y2-y1)*(x1-xA1))/denom;
+      if (ua >= 0 && ua <= 1 && ub >= 0 && ub <= 1) {
+        intersectX = x1 + ua*(x2 - x1);
+        intersectY = y1 + ua*(y2 - y1);
+        break;
+      }
+    }
+  }
+  
+  if(intersectX !== null && intersectY !== null){
+    ctx.beginPath();
+    ctx.fillStyle='green';
+    ctx.arc(intersectX, intersectY, 6, 0, 2*Math.PI);
+    ctx.fill();
+    const cutoffScorePC = ((intersectX - margin.left)/width)*100;
+    const cutoffFailure = 100 - ((intersectY - margin.top)/height)*100;
+    cutoffDiv.textContent = `Cut-off Score (% Correct): ${cutoffScorePC.toFixed(2)} | Failure Rate (%): ${cutoffFailure.toFixed(2)}`;
+  } else {
+    cutoffDiv.textContent = 'Cut-off Score (% Correct): - | Failure Rate (%): -';
+  }
+}
+
+function parseText(content){
+  return content.split(/\r?\n/).flatMap(line=>line.split(/,|;/).map(s=>parseFloat(s.trim())).filter(n=>!isNaN(n)));
+}
+
+function handleFile(file){
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const ext=file.name.toLowerCase();
+    if(ext.endsWith('.txt') || ext.endsWith('.csv')){
+      const vals=parseText(e.target.result);
+      onData(vals.length?vals:[]);
+    } else if(ext.endsWith('.xlsx') || ext.endsWith('.xls')){
+      const data=new Uint8Array(e.target.result);
+      const wb=XLSX.read(data,{type:'array'});
+      const ws=wb.Sheets[wb.SheetNames[0]];
+      const json=XLSX.utils.sheet_to_json(ws,{header:1});
+      const vals=json.flatMap(r=>r.map(c=>parseFloat(c)).filter(n=>!isNaN(n)));
+      onData(vals.length?vals:[]);
+    } else alert("Unsupported file type.");
+  };
+  if(file.name.toLowerCase().endsWith('.xlsx') || file.name.toLowerCase().endsWith('.xls')){
+    reader.readAsArrayBuffer(file);
+  } else {
+    reader.readAsText(file);
+  }
+}
+
+function onData(arr){
+  data=arr.filter(n=>n>=0&&n<=100);
+  if(!data.length) generateDefaultData();
+  else {
+    computeCumulative(data);
+    draw();
+  }
+}
+
+fileInput.addEventListener('change',e=>{if(e.target.files.length)handleFile(e.target.files[0]);});
+
+// Enforce numeric integer 0-100 input with empty allowed
+[cMin,cMax,fMin,fMax].forEach(input=>{
+  input.addEventListener('input', e=>{
+    let val = e.target.value;
+    if(val === '') return; // allow empty
+
+    val = Math.round(Number(val));
+    if (isNaN(val)) val = '';
+    else if (val < 0) val = 0;
+    else if (val > 100) val = 100;
+
+    e.target.value = val;
+
+    draw();
+  });
+});
+
+generateDefaultData();
+</script>
+
+<section style="margin-top: 2rem; font-size: 0.9em; line-height: 1.4; border-top: 1px solid #ccc; padding-top: 1rem;">
+  <p>
+    This web app implements the Hofstee cut-off score method and can be used <strong>online</strong> by accessing the hosted version, or <strong>offline</strong> by downloading the entire project folder and opening the <code>index.html</code> file locally on your computer or device. It works across Windows, macOS, Android, and iOS platforms.
+  </p>
+  <p>
+    The project extends the approach developed by Masters and Al-Wardy (2021). It is released under a Creative Commons license and is provided "as is" without warranty.
+  </p>
+</section>
+
+<section style="margin-top: 2rem; font-size: 0.9em; line-height: 1.4; border-top: 1px solid #ccc; padding-top: 1rem;">
+  <h3>Note on Scoring Method</h3>
+  <p>
+    This app calculates the cut-off score using <strong>percentage of correct answers</strong> as the scoring metric as described in the paper by Masters and Al-Wardy (2021).
+  </p>
+</section>
+
+<section style="margin-top: 2rem; font-size: 0.9em; line-height: 1.4; border-top: 1px solid #ccc; padding-top: 1rem;">
+  <h3>Reference</h3>
+  <p>
+    Masters, K., & Al-Wardy, N. (2021). Designing and developing an app to perform Hofstee cut-off calculations. <i>F1000Research</i>, <i>10</i>, 450. <a href="https://doi.org/10.12688/f1000research.53096.2" target="_blank" rel="noopener noreferrer">https://doi.org/10.12688/f1000research.53096.2</a>
+  </p>
+</section>
+
+
+</body>
+</html>
