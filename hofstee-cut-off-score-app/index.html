@@ -14,10 +14,10 @@
 <body>
 <h2>Hofstee Cut-Off Score Calculator</h2>
 <div>
-  <label>Min Cut-off Score: 
+  <label>Min Cut-off Score (%): 
     <input type="number" id="c_min" value="30" min="0" max="100" step="1" inputmode="numeric" pattern="[0-9]*" />
   </label>
-  <label>Max Cut-off Score:: 
+  <label>Max Cut-off Score (%):
     <input type="number" id="c_max" value="70" min="0" max="100" step="1" inputmode="numeric" pattern="[0-9]*" />
   </label>
   <label>Min Fail Rate (%): 
@@ -276,11 +276,11 @@ generateDefaultData();
     <li>Adjust the Hofstee cut-off parameters (minimum and maximum failure rates, and cut-off score limits) as needed.</li>
   </ol>
 
-  <h3>Note on Scoring Method and some Lmitations</h3>
+  <h3>Note on the Scoring process and Method Lmitations</h3>
   <p>
-    This app calculates the cut-off score using <strong>percentage of correct answers</strong> as the scoring metric, as described in the paper by Masters and Al-Wardy (2021).
+    This app calculates the cut-off score using <strong>percentage of correct answers</strong> as the scoring metric as described in the paper by Masters and Al-Wardy (2021).
     In some cases, the line derived from ratings does not intersect with the test score distribution curve. 
-    In these situations, extending the rating line until it intersects the score distribution curve produces results similar to the Beuk method (Wyse and Babcock, 2017).
+    In these situations, extending the rating line until it intersects the score distribution curve. This workaround was tested against the results from another assessment method and showed similar results (see Wyse and Babcock, 2017).
   </p>
 
   <h3>Reference</h3>
@@ -296,6 +296,7 @@ generateDefaultData();
 
 </body>
 </html>
+
 
 
 
