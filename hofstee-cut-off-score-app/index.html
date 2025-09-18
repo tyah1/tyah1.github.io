@@ -94,7 +94,7 @@ function draw() {
   
   ctx.font='14px Arial';
   ctx.fillText('Cumulative % students FAILING',margin.left-60,margin.top-5);
-  ctx.fillText('Percentage Correct',margin.left+width+10,margin.top+height+15);
+  ctx.fillText('% Correct',margin.left+width+10,margin.top+height+15);
   
   // Y-axis grid and labels
   ctx.strokeStyle='#aaa'; ctx.lineWidth=1; ctx.font='12px Arial'; ctx.fillStyle='black';
@@ -198,9 +198,9 @@ function draw() {
     ctx.fill();
     const cutoffScorePC = ((intersectX - margin.left)/width)*100;
     const cutoffFailure = 100 - ((intersectY - margin.top)/height)*100;
-    cutoffDiv.textContent = `Cut-off Score (% Correct): ${cutoffScorePC.toFixed(2)} | Failure Rate (%): ${cutoffFailure.toFixed(2)}`;
+    cutoffDiv.textContent = `Cut-off Score (%): ${cutoffScorePC.toFixed(2)} | Failure Rate (%): ${cutoffFailure.toFixed(2)}`;
   } else {
-    cutoffDiv.textContent = 'Cut-off Score (% Correct): - | Failure Rate (%): -';
+    cutoffDiv.textContent = 'Cut-off Score (%): - | Failure Rate (%): -';
   }
 }
 
@@ -296,6 +296,7 @@ generateDefaultData();
 
 </body>
 </html>
+
 
 
 
