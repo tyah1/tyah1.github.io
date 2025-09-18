@@ -14,16 +14,16 @@
 <body>
 <h2>Hofstee Cut-Off Score Calculator</h2>
 <div>
-  <label>Min Cut-off (c_min): 
+  <label>Min Cut-off Score: 
     <input type="number" id="c_min" value="30" min="0" max="100" step="1" inputmode="numeric" pattern="[0-9]*" />
   </label>
-  <label>Max Cut-off (c_max): 
+  <label>Max Cut-off Score:: 
     <input type="number" id="c_max" value="70" min="0" max="100" step="1" inputmode="numeric" pattern="[0-9]*" />
   </label>
-  <label>Min Fail Rate (f_min %): 
+  <label>Min Fail Rate (%): 
     <input type="number" id="f_min" value="25" min="0" max="100" step="1" inputmode="numeric" pattern="[0-9]*" />
   </label>
-  <label>Max Fail Rate (f_max %): 
+  <label>Max Fail Rate (%): 
     <input type="number" id="f_max" value="35" min="0" max="100" step="1" inputmode="numeric" pattern="[0-9]*" />
   </label>
 </div>
@@ -274,8 +274,6 @@ generateDefaultData();
   <ol>
     <li>Upload your scores using an Excel (.xlsx), CSV (.csv), or plain text (.txt) file. <strong>Please ensure the score data is in the first column of the file.</strong></li>
     <li>Adjust the Hofstee cut-off parameters (minimum and maximum failure rates, and cut-off score limits) as needed.</li>
-    <li>View the displayed cut-off score, failure rates, and cumulative failure curve graph.</li>
-      <li>Use the app online via the hosted link or offline by downloading and opening <code>index.html</code> locally on any device.</li>
   </ol>
 
   <h3>Note on Scoring Method and some Lmitations</h3>
@@ -298,6 +296,7 @@ generateDefaultData();
 
 </body>
 </html>
+
 
 
 
